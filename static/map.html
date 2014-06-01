@@ -41,9 +41,9 @@
                 }
 
                 start = $('#start_time').datetimepicker("getDate");
-                searchFilter.time_window_start = start.getFullYear() + "-" + start.getMonth() + "-" + start.getDate() + " " + start.getHours() + ":" + start.getMinutes();
+                searchFilter.time_window_start = start.getFullYear() + "-" + start.getMonth() + "-" + start.getDate() + " " + start.getHours() + ":" + 10;
                 end = $('#end_time').datetimepicker("getDate");
-                searchFilter.time_window_end = end.getFullYear() + "-" + end.getMonth() + "-" + end.getDate() + " " + end.getHours() + ":" + end.getMinutes();
+                searchFilter.time_window_end = end.getFullYear() + "-" + end.getMonth() + "-" + end.getDate() + " " + end.getHours() + ":" + 10;
 
                 searchFilter.food_type = ""; 
 
@@ -89,7 +89,7 @@
                     }
                   }
                 xmlhttp.open("POST","/ajax/donations/search.json",true);
-                xmlhttp.send("dropoff=" + searchFilter.dropoff + "&pickup=" + searchFilter.pickup + "&keywords=" + searchFilter.keywords + "&lat=" + searchFilter.lat + "&lon=" + searchFilter.lon + "&food_type=" + searchFilter.food_type + "&distance=" + searchFilter.distance + "&time_window_start=" + searchFilter.time_window_start + "&time_window_end=" + searchFilter.time_window_end); 
+                xmlhttp.send("dropoff=" + searchFilter.dropoff + "&pickup=" + searchFilter.pickup + "&keywords=" + searchFilter.keywords + "&lat=" + searchFilter.lat + "&lon=" + searchFilter.lon + "&food_type=" + searchFilter.food_type + "&distance=" + 25 + "&time_window_start=" + searchFilter.time_window_start + "&time_window_end=" + searchFilter.time_window_end); 
 
                $.ajax({
                     type: "POST",
