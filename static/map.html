@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mannafeast</title>
+    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery.ui.all.css">
+    <link rel="stylesheet" media="all" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <link href="http://bootswatch.com/cerulean/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAesYInd7D1KrPrM8ZjBD0lIbNfYfOs_zA&v=3.exp&sensor=false"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+    <script src="datepicker.js"></script>
+    <script>
+        var showValue;
+        var updateSearchFilter;
+        var searchFilter = new Object(); 
+
+        var changingLocation = true;
+
+        searchFilter.distance = 25;
+        searchFilter.types = ["refrigerated", "shelf-stable", "produce", "frozen"];
+        searchFilter.keywords = new Array();
+        searchFilter.pickup = true;
+        searchFilter.dropoff = true;
+
+        $(document).ready(function () {
+
+            var donor_points = new Object();
+            var recipient_points = new Object();
+
+            updateSearchFilter = function() {
+                var distance =  $(".distance-slider-value").val();
+                if (!isNaN(distance)) {
+                    searchFilter.distance = distance;
+                } else {
+                    searchFilter.distance = 25;
+                }
+
+                searchFilter.start_time = $('#start_time').datetimepicker("getDate").getTime() / 1000;
+                searchFilter.end_time = $('#end_time').datetimepicker("getDate").getTime() / 1000;
+
+                searchFilter.types = new Array();
+
+                $(".selectType input").each( function() {
+                    if ($(this).is(":checked")) {
+                        searchFilter.types.push($(this).val());
+                    }
+                });
+
+                searchFilter.keywords = $("#keywords").val().split(" ");
+                
+                if ($("#pickup").is(":checked")) {
+                    searchFilter.pickup = true;
+                } else {
+                    searchFilter.pickup = false;
+                }
+
+                if ($("#dropoff").is(":checked")) {
+                    searchFilter.dropoff = true;
+                } else {
+                    searchFilter.dropoff = false;
+                }
+
+                console.log(searchFilter);
+            }
+
+            function initialize() {
+                // Get data from server
+                $.getJSON("demo_ajax_json.js", function (result) {
+                    donor_points = result;
+                });
+
+                $.getJSON("demo_ajax_json.js", function (result) {
+                    recipient_points = result;
+                });
+                var position = null;
+
+                if (navigator.geolocation) {
+                    position = navigator.geolocation.getCurrentPosition(loadMap);
+                } else {
+                    alert("Geolocation is not supported by this browser.");
+                }
+
+                loadMap(null);
+            }
+
+            function loadMap(position) {
+                // detectBrowser();
+
+                var locations = new Array(); //Should be data recieved
+
+                for (i = 0; i < locations.length; i++) {
+                    var lat = locations[i].lat;
+                    var long = locations[i].long;
+                    var title = locations[i].title;
+                    var description = locations[i].description;
+
+                    latlngset = new google.maps.LatLng(lat, long);
+
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        title: loan,
+                        position: latlngset
+                    });
+                    map.setCenter(marker.getPosition())
+
+
+                    var content = "<h1>" + title + "</h1><p>" + descripton + "</p>"; //Should be html for title of the infowindow and description
+
+                    var infowindow = new google.maps.InfoWindow()
+
+                    google.maps.event.addListener(marker, 'click', (function (marker, content, infowindow) {
+                        return function () {
+                            infowindow.setContent(content);
+                            infowindow.open(map, marker);
+                        };
+                    })(marker, content, infowindow));
+
+                }
+
+                if (position != null) {
+                    var mapOptions = {
+                        zoom: 10,
+                        center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+
+                    };
+                } else {
+                    var mapOptions = {
+                        zoom: 10,
+                        center: new google.maps.LatLng(39.154743, -77.240515)
+                    };
+                }
+
+                var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+                var marker = new google.maps.Marker({
+                    position: map.getCenter(),
+                    map: map,
+                    title: 'Click to zoom'
+                });
+
+                var content = "<h3>" + "Donation Listing" + "</h3><p>" + "Donation description" + "</p>"; //Should be html for title of the infowindow and description
+
+                var infowindow = new google.maps.InfoWindow()
+
+                google.maps.event.addListener(marker, "dblclick", function (e) {
+                    alert('hi');
+                    if (changingLocation) {
+                        map.setCenter(e.latLng);
+                        searchFilter.position = e.latLng;
+                    }
+                });
+
+                google.maps.event.addListener(marker, 'click', (function (marker, content, infowindow) {
+                    return function () {
+                        infowindow.setContent(content);
+                        infowindow.open(map, marker);
+
+                        $("#markerTitle").text("Donation Listing");
+                        $("#markerDescription").text("Donation description");
+                        $("#markerInformation").slideDown();
+                    };
+                })(marker, content, infowindow));
+            }
+
+            function detectBrowser() {
+                var useragent = navigator.userAgent;
+                var mapdiv = document.getElementById("map-canvas");
+
+                if (useragent.indexOf('iPhone') != -1 || useragent.indexOf('Android') != -1) {
+                    mapdiv.style.width = '100%';
+                    mapdiv.style.height = '100%';
+                } else {
+                    mapdiv.style.height = '400px';
+                }
+            }
+
+            function displayDonorInformation(marker) {
+
+            }
+
+            $("#filter-more").click(function () {
+                $("#search-form").slideToggle();
+            });
+            showValue = function (newValue) {
+                $(".distance-slider-value").each(function () {
+                    var distance = $(this).val(newValue);
+                    if (!isNaN(distance)) {
+                        searchFilter.distance = distance;
+                    } else {
+                        searchFilter.distance = 25;
+                    }
+                });
+            }
+
+            $("#donor-view").click(function () {
+                if (!$(this).hasClass("active-page")) {
+                    $(this).toggleClass("active-page");
+                    $("#recipient-view").toggleClass("active-page");
+                    $("#donor-message").slideToggle();
+                    $("#recipient-message").slideToggle();
+                }
+            });
+
+            $("#recipient-view").click(function () {
+                if (!$(this).hasClass("active-page")) {
+                    $(this).toggleClass("active-page");
+                    $("#donor-view").toggleClass("active-page");
+                    $("#donor-message").slideToggle();
+                    $("#recipient-message").slideToggle();
+                }
+            });
+
+            google.maps.event.addDomListener(window, 'load', initialize);
+        });
+    </script>
+    <style>
+        html,
+        body,
+        #map-canvas {
+            height: 100%;
+            margin: 0px;
+            padding: 0px
+        }
+        .row-fluid {
+            margin-bottom: 15px;
+        }
+        .selectType {
+            border: 2px solid #ccc;
+            background-color: #fff;
+            height: 150px;
+            overflow-y: scroll;
+        }
+        .selectType > input {
+            margin-left: 5px;
+        }
+        .alert {
+            -webkit-transition: .4s ease-in-out box-shadow;
+            -moz-transition: .4s ease-in-out box-shadow;
+            -o-transition: .4s ease-in-out box-shadow;
+            transition: .4s ease-in-out box-shadow;
+        }
+        .alert:hover {
+            -moz-box-shadow: 1px 1px 5px #999;
+            -webkit-box-shadow: 1px 1px 5px #999;
+            box-shadow: 1px 1px 5px #999;
+        }
+        .active-page {
+            border-color: #777;
+        }
+        .ui-timepicker-div .ui-widget-header {
+            margin-bottom: 8px;
+        }
+        .ui-timepicker-div dl {
+            text-align: left;
+        }
+        .ui-timepicker-div dl dt {
+            height: 25px;
+            margin-bottom: -25px;
+        }
+        .ui-timepicker-div dl dd {
+            margin: 0 10px 10px 65px;
+        }
+        .ui-timepicker-div td {
+            font-size: 90%;
+        }
+        .ui-tpicker-grid-label {
+            background: none;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+        .ui-timepicker-rtl {
+            direction: rtl;
+        }
+        .ui-timepicker-rtl dl {
+            text-align: right;
+        }
+        .ui-timepicker-rtl dl dd {
+            margin: 0 65px 10px 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mainsection">
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="position: relative;">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Mannafeast</a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a id="search-link" href="/search">Search</a>
+                        </li>
+                        <li><a id="donate-link" href="/donate">Donate</a>
+                        </li>
+                        <li><a id="manage_donations-link" href="/manage_donations">Manage Donations</a>
+                        </li>
+                        <li><a id="logout-link" href="/logout">Logout</a>
+                        </li>
+                        <li><a id="login-link" href="/login">Login</a>
+                        </li>
+                        <li><a id="register-link" href="/regsiter">Register</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <div class="container">
+            <div class="jumbotron" style="padding-bottom:5px;padding-top:5px;">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <h1>Search</h1>
+                        <p id="donor-message">Find food donors near you</p>
+                        <p id="recipient-message" style="display:none">Find food recipients near you</p>
+                    </div>
+                    <div class="col-lg-4">
+                        <div id="recipient-view" class="active-page alert alert-info" style="margin-top:25px;padding-left:35px;padding-top:10px;cursor:pointer;">
+                            <h2>View as Recipient</h2>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div id="donor-view" class="alert alert-success" style="margin-top:25px;padding-left:55px;padding-top:10px;cursor:pointer;">
+                            <h2>View as Donor</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12" style="height:400px">
+                    <div id="map-canvas"></div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:15px;">
+                <div class="col-lg-8" style="">
+                    <div id="markerInformation" style="display:none">
+                        <h2 id="markerTitle">Title</h2>
+                        <p id="markerDescription">description</p>
+                        <h2>Pictures</h2>
+                        <div id="markerPictures"></div>
+                        <h2>Type</h2>
+                        <div id="markerType"></div>
+                        <h2>Time Window</h2>
+                        <div id="markerTimeWindow"></div>
+                        <h2>Contact</h2>
+                        <div id="markerContact">
+                            <a href:"tel:"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <form class="form-horizontal">
+                        <fieldset>
+                            <legend>Filter Search</legend>
+                            <div class="form-group">
+                                <label for="inputDistance" class="col-lg-4 control-label">Distance &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp(in miles)</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control distance-slider-value" placeholder="25" type="text">
+                                    <input type="range" id="distance-slider" min="0" max="200" value="25" step="10" onchange="showValue(this.value)" />
+                                </div>
+                            </div>
+                            <div id="search-form" style="display:none">
+                                <div class="form-group">
+                                    <label for="start_time" class="col-lg-4 control-label">Start Time</label>
+                                    <div class="col-lg-8">
+                                        <input type="text" value="" id="start_time" name="start_time" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="end_time" class="col-lg-4 control-label">End Time</label>
+                                    <div class="col-lg-8">
+                                        <input type="text" value="" id="end_time" name="end_time" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="selectType" class="col-lg-4 control-label">Type</label>
+                                    <div class="col-lg-8">
+                                        <div class="selectType">
+                                            <label>
+                                                <input type="checkbox" value="refrigerated" checked/>Refrigerated
+                                            </label>
+                                            <br />
+                                            <label>
+                                                <input type="checkbox" value="shelf-stable" checked/>Shelf-stable
+                                            </label>
+                                            <br />
+                                            <label>
+                                                <input type="checkbox" value="produce" checked/>Produce
+                                            </label>
+                                            <br />
+                                            <label>
+                                                <input type="checkbox" value="frozen" checked/>Frozen
+                                            </label>
+                                            <br />
+                                            <label>
+                                                <input type="checkbox" value="animal_food" />Animal Food
+                                            </label>
+                                            <br />
+                                            <label>
+                                                <input type="checkbox" value="compost" />Compost
+                                            </label>
+                                            <br />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-top:15px;" class="form-group">
+                                    <label for="keywords" class="col-lg-4 control-label">Keywords</label>
+                                    <div class="col-lg-8">
+                                        <textarea class="form-control" rows="3" id="keywords"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pickup" class="col-lg-4 control-label">Pick Up</label>
+                                    <div class="col-lg-8">
+                                        <input type="checkbox" id="pickup" name="pickup" value="pickup" checked/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dropoff" class="col-lg-4 control-label">Drop Off</label>
+                                    <div class="col-lg-8">
+                                        <input type="checkbox" id="dropoff" name="dropoff" value="dropoff" checked/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-4">
+                                    <button id="filter-more" type="button" class="btn btn-primary">More Filters</button>
+                                    <button id="filter-update" type="button" class="btn btn-primary" onclick="updateSearchFilter();">Update Search</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+
