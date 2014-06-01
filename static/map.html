@@ -19,7 +19,7 @@
         var showValue;
         var updateSearchFilter;
         var searchFilter = new Object(); 
-        var position = null;
+        var position;
         var changingLocation = true;
 
         searchFilter.distance = 25;
@@ -73,7 +73,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "ajax/donations/search.json",
+                    url: "/ajax/donations/search.json",
                     data: searchFilter,
                     success: function(data) {
                         console.log(data);
@@ -92,6 +92,7 @@
                     recipient_points = result;
                 });
 
+                console.log(position);
                 if (navigator.geolocation) {
                     position = navigator.geolocation.getCurrentPosition(loadMap);
                 } else {
