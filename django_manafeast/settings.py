@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'django_extensions',
     'json_field',
+    'ajax',
 
     # our apps
     'accounts',

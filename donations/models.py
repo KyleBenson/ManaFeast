@@ -13,6 +13,8 @@ class Donation(models.Model):
     lat = models.FloatField()
     lon = models.FloatField()
 
+    location = models.PointField()
+
     long_description = models.TextField()
     short_description = models.TextField(max_length=50, null=False)
 
