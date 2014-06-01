@@ -23,7 +23,7 @@
         var changingLocation = true;
 
         searchFilter.distance = 25;
-        searchFilter.types = ["refrigerated", "shelf-stable", "produce", "frozen"];
+        searchFilter.types = "refrigerated shelf-stable produce frozen";
         searchFilter.keywords = new Array();
         searchFilter.pickup = true;
         searchFilter.dropoff = true;
@@ -41,32 +41,42 @@
                     searchFilter.distance = 25;
                 }
 
-                searchFilter.start_time = $('#start_time').datetimepicker("getDate").getTime() / 1000;
-                searchFilter.end_time = $('#end_time').datetimepicker("getDate").getTime() / 1000;
+                start = $('#start_time').datetimepicker("getDate");
+                searchFilter.time_window_start = start.getFullYear() + "/" + start.getMonth() + "/" + start.getDate() + " " + start.getHours() + ":" + start.getMinutes();
+                end = $('#end_time').datetimepicker("getDate");
+                searchFilter.time_window_end = end.getFullYear() + "/" + end.getMonth() + "/" + end.getDate() + " " + end.getHours() + ":" + end.getMinutes();
 
-                searchFilter.types = new Array();
+                searchFilter.food_type = ""; 
 
                 $(".selectType input").each( function() {
                     if ($(this).is(":checked")) {
-                        searchFilter.types.push($(this).val());
+                        searchFilter.food_type += $(this).val() + " ";
                     }
                 });
 
-                searchFilter.keywords = $("#keywords").val().split(" ");
+                searchFilter.keywords = $("#keywords").val();
                 
                 if ($("#pickup").is(":checked")) {
-                    searchFilter.pickup = true;
+                    searchFilter.pickup = "pickup";
                 } else {
-                    searchFilter.pickup = false;
+                    searchFilter.pickup = "";
                 }
 
                 if ($("#dropoff").is(":checked")) {
-                    searchFilter.dropoff = true;
+                    searchFilter.dropoff = "dropoff";
                 } else {
-                    searchFilter.dropoff = false;
+                    searchFilter.dropoff = "";
                 }
 
-                console.log(searchFilter);
+                $.ajax({
+                    type: "POST",
+                    url: "ajax/donations/search.json",
+                    data: searchFilter,
+                    success: function(data) {
+                        console.log(data);
+                    },
+                    dataType: "json" 
+                });
             }
 
             function initialize() {
