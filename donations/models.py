@@ -40,5 +40,6 @@ class DonationForm(ModelForm):
     class Meta:
         model = Donation
         fields = ['lat', 'lon', 'long_description', 'short_description',
-                  'time_window_start', 'time_window_end', 'pickup', 'dropoff']
+                  'time_window_start', 'time_window_end', 'pickup', 'dropoff',
+                  'food_type']
 
