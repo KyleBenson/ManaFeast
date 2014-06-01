@@ -1,0 +1,5 @@
+<form action="/donate.html" method="post"
+  {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+  {{ form.as_p }}
+  <input type="submit" value="Submit" />
+</form>
