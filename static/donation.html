@@ -23,7 +23,7 @@ var marker;
 
 function initializeMap() {
   var mapOptions = {
-    zoom: 6
+    zoom: 9
   };
   map = new google.maps.Map(document.getElementById('map-canvas'),
       mapOptions);
@@ -98,7 +98,7 @@ google.maps.event.addDomListener(window, 'load', initializeMap);
 
         function storeLatLong(lat, lng) {
             $("#lat").val(lat);
-            $("#long").val(lng);
+            $("#lon").val(lng);
         }
 
         $("#currentLocation").click( function() {
@@ -172,23 +172,23 @@ google.maps.event.addDomListener(window, 'load', initializeMap);
 
 <div class="row">
     <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
-		<form role="form">
+		<form role="form" method="POST" action="/donate.html">
             <div class="form-group">
                 <label for="" class="col-lg-4 control-label">Title</label>
                 <div class="col-lg-8">
-                    <input class="form-control"  type="text" value="" id="title" name="title" />
+                    <input class="form-control"  type="text" value="" id="short_description" name="short_description" />
                 </div>
             </div>
             <div class="form-group">
-                <label for="description" class="col-lg-4 control-label">Description</label>
+                <label for="long_description" class="col-lg-4 control-label">Description</label>
                 <div class="col-lg-8">
-                    <textarea class="form-control" rows="3"  value="" id="description" name="description" ></textarea>
+                    <textarea class="form-control" rows="3"  value="" id="long_description" name="long_description" ></textarea>
                 </div>
             </div>
             <div class="form-group">
               <label class="col-lg-2 control-label">Location</label>
               <input hidden name="lat" id="lat" type="text" />
-              <input hidden name="long" id="long" type="text" />
+              <input hidden name="lon" id="lon" type="text" />
               <div class="col-lg-8 col-lg-offset-2">
                 <div class="radio">
                   <label>
@@ -210,15 +210,15 @@ google.maps.event.addDomListener(window, 'load', initializeMap);
                 </div>
             </div>
             <div class="form-group">
-                <label for="start_time" class="col-lg-4 control-label">Start Time</label>
+                <label for="time_window_start" class="col-lg-4 control-label">Start Time</label>
                 <div class="col-lg-8">
-                    <input class="form-control"  type="text" value="" id="start_time" name="start_time" />
+                    <input class="form-control"  type="text" value="" id="start_time" name="time_window_start" />
                 </div>
             </div>
             <div class="form-group">
-                <label for="end_time" class="col-lg-4 control-label">End Time</label>
+                <label for="time_window_end" class="col-lg-4 control-label">End Time</label>
                 <div class="col-lg-8">
-                    <input class="form-control"  type="text" value="" id="end_time" name="end_time" />
+                    <input class="form-control"  type="text" value="" id="end_time" name="time_window_end" />
                 </div>
             </div>
             <div class="form-group">
@@ -234,7 +234,7 @@ google.maps.event.addDomListener(window, 'load', initializeMap);
                 </div>
             </div>
 			<div class="row">
-				<div style="margin-top:15px" class="col-xs-12 col-md-6"><input type="button" value="Post Donation" class="btn btn-primary btn-block btn-lg" tabindex="8"></div>
+				<div style="margin-top:15px" class="col-xs-12 col-md-6"><input type="submit" value="Post Donation" class="btn btn-primary btn-block btn-lg" tabindex="8"></div>
 				<div style="margin-top:15px" class="col-xs-12 col-md-6"><a href="#" class="btn btn-success btn-block btn-lg">Cancel</a></div>
 			</div>
 		</form>

@@ -5,7 +5,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'django_manafeast.views.home', name='home'),
+    url(r'^$', 'django_manafeast.views.login_handler', name='home'),
     url(r'^account.html$', 'accounts.views.new_account'),
     url(r'^donate.html$', 'donations.views.donate'),
     url(r'^ajax/', include('ajax.urls')),

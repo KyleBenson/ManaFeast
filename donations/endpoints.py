@@ -15,7 +15,7 @@ def search(request):
                                        )
 
         if query['food_type']:
-            objs = objs.filter(food_type__in=query['food_type'].split())
+            objs = objs.filter(food_type__in=query['food_type'].strip().split())
 
         # careful here, don't want to use exclude as a donation may have both
         # options.  Note that one of these must be true!
