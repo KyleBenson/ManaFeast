@@ -17,9 +17,8 @@
     <script src="datepicker.js"></script>
     <script>
         var showValue;
-        var updateSearchFilter;
         var searchFilter = new Object(); 
-        var position;
+        var position = new Object();
         var changingLocation = true;
 
         searchFilter.distance = 25;
@@ -33,7 +32,7 @@
             var donor_points = new Object();
             var recipient_points = new Object();
 
-            updateSearchFilter = function() {
+            $("#filter-update").click( function() {
                 var distance =  $(".distance-slider-value").val();
                 if (!isNaN(distance)) {
                     searchFilter.distance = distance;
@@ -73,10 +72,36 @@
                 
                 console.log(searchFilter);
 
-                $.post("/ajax/donations/search.json", searchFilter, function(response) {
-                    console.log(response);
-                }, 'json');
-            }
+                var xmlhttp;
+                if (window.XMLHttpRequest)
+                {// code for IE7+, Firefox, Chrome, Opera, Safari
+                  xmlhttp=new XMLHttpRequest();
+                }
+                else
+                  {// code for IE6, IE5
+                  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                  }
+                xmlhttp.onreadystatechange=function()
+                  {
+                  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                    {
+                        xmlhttp.responseText;
+                    }
+                  }
+                xmlhttp.open("POST","/ajax/donations/search.json",true);
+                xmlhttp.send("dropoff=" + searchFilter.dropoff + "&pickup=" + searchFilter.pickup + "&keywords=" + searchFilter.keywords + "&lat=" + searchFilter.lat + "&lon=" + searchFilter.lon + "&food_type=" + searchFilter.food_type + "&distance=" + searchFilter.distance + "&time_window_start=" + searchFilter.time_window_start + "&time_window_end=" + searchFilter.time_window_end); 
+
+               $.ajax({
+                    type: "POST",
+                    url: "/ajax/donations/search.json",
+                    data: searchFilter,
+                    success: function(data) {
+                        console.log(data);
+                    },
+                    dataType: "json"
+                });
+                return false;
+            });
 
             function initialize() {
                 if (navigator.geolocation) {
@@ -84,14 +109,12 @@
                 } else {
                     alert("Geolocation is not supported by this browser.");
                 }
-                loadMap(null);
             }
 
             function loadMap(markerPosition) {
                 // detectBrowser();
                 position.lat = markerPosition.coords.latitude;
                 position.lon = markerPosition.coords.longitude;
-;
                 var locations = new Array(); //Should be data recieved
 
                 for (i = 0; i < locations.length; i++) {
@@ -131,10 +154,10 @@
                 } else {
                     var mapOptions = {
                         zoom: 10,
-                        center: new google.maps.LatLng(39.154743, -77.240515);
-                        position.lat = 39.154743;
-                        position.lon = -77.240515;
+                        center: new google.maps.LatLng(39.154743, -77.240515)
                     };
+                    position.lat = 39.154743;
+                    position.lon = -77.240515;
                 }
 
                 var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
@@ -435,7 +458,7 @@
                             <div class="form-group">
                                 <div class="col-lg-offset-4">
                                     <button id="filter-more" type="button" class="btn btn-primary">More Filters</button>
-                                    <button id="filter-update" type="button" class="btn btn-primary" onclick="updateSearchFilter();">Update Search</button>
+                                    <button id="filter-update" type="button" class="btn btn-primary">Update Search</button>
                                 </div>
                             </div>
                         </fieldset>
