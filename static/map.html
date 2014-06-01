@@ -74,7 +74,15 @@
                 $.ajax({
                     type: "POST",
                     url: "/ajax/donations/search.json",
-                    data: searchFilter,
+                    data: {
+                        dropoff: searchFilter.dropoff,
+                        pickup: searchFilter.pickup,
+                        keywords: searchFilter.keywords,
+                        food_type: searchFilter.food_type,
+                        time_window_start: searchFilter.time_window_start,
+                        time_window_end: searchFilter.time_window_end,
+                        distance: searchFilter.distance
+                    },
                     success: function(data) {
                         console.log(data);
                     },
