@@ -79,15 +79,6 @@
             }
 
             function initialize() {
-                // Get data from server
-                $.getJSON("demo_ajax_json.js", function (result) {
-                    donor_points = result;
-                });
-
-                $.getJSON("demo_ajax_json.js", function (result) {
-                    recipient_points = result;
-                });
-
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(loadMap);
                 } else {
@@ -136,7 +127,6 @@
                     var mapOptions = {
                         zoom: 10,
                         center: new google.maps.LatLng(markerPosition.coords.latitude, markerPosition.coords.longitude),
-
                     };
                 } else {
                     var mapOptions = {
@@ -158,14 +148,6 @@
                 var content = "<h3>" + "Donation Listing" + "</h3><p>" + "Donation description" + "</p>"; //Should be html for title of the infowindow and description
 
                 var infowindow = new google.maps.InfoWindow()
-
-                google.maps.event.addListener(marker, "dblclick", function (e) {
-                    alert('hi');
-                    if (changingLocation) {
-                        map.setCenter(e.latLng);
-                        searchFilter.position = e.latLng;
-                    }
-                });
 
                 google.maps.event.addListener(marker, 'click', (function (marker, content, infowindow) {
                     return function () {
