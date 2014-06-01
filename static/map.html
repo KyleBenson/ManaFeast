@@ -54,8 +54,8 @@
                     }
                 });
 
-                searchFilter.lat = position.coords.latitude;
-                searchFilter.lon = position.coords.longitude;
+                searchFilter.lat = position.lat;
+                searchFilter.lon = position.lon;
 
                 searchFilter.keywords = $("#keywords").val();
                 
@@ -70,24 +70,12 @@
                 } else {
                     searchFilter.dropoff = "";
                 }
+                
+                console.log(searchFilter);
 
-                $.ajax({
-                    type: "POST",
-                    url: "/ajax/donations/search.json",
-                    data: {
-                        dropoff: searchFilter.dropoff,
-                        pickup: searchFilter.pickup,
-                        keywords: searchFilter.keywords,
-                        food_type: searchFilter.food_type,
-                        time_window_start: searchFilter.time_window_start,
-                        time_window_end: searchFilter.time_window_end,
-                        distance: searchFilter.distance
-                    },
-                    success: function(data) {
-                        console.log(data);
-                    },
-                    dataType: "json" 
-                });
+                $.post("/ajax/donations/search.json", searchFilter, function(response) {
+                    console.log(response);
+                }, 'json');
             }
 
             function initialize() {
@@ -100,19 +88,19 @@
                     recipient_points = result;
                 });
 
-                console.log(position);
                 if (navigator.geolocation) {
-                    position = navigator.geolocation.getCurrentPosition(loadMap);
+                    navigator.geolocation.getCurrentPosition(loadMap);
                 } else {
                     alert("Geolocation is not supported by this browser.");
                 }
-
                 loadMap(null);
             }
 
-            function loadMap(position) {
+            function loadMap(markerPosition) {
                 // detectBrowser();
-
+                position.lat = markerPosition.coords.latitude;
+                position.lon = markerPosition.coords.longitude;
+;
                 var locations = new Array(); //Should be data recieved
 
                 for (i = 0; i < locations.length; i++) {
@@ -144,16 +132,18 @@
 
                 }
 
-                if (position != null) {
+                if (markerPosition != null) {
                     var mapOptions = {
                         zoom: 10,
-                        center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+                        center: new google.maps.LatLng(markerPosition.coords.latitude, markerPosition.coords.longitude),
 
                     };
                 } else {
                     var mapOptions = {
                         zoom: 10,
-                        center: new google.maps.LatLng(39.154743, -77.240515)
+                        center: new google.maps.LatLng(39.154743, -77.240515);
+                        position.lat = 39.154743;
+                        position.lon = -77.240515;
                     };
                 }
 
