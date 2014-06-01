@@ -17,3 +17,7 @@ def donate(request):
 
     else:
         return HttpResponseRedirect('/static/donation.html')
+
+
+def search(request):
+    return HttpResponseRedirect('/static/map.html')

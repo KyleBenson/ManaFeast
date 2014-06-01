@@ -28,6 +28,8 @@ class Donation(models.Model):
 
     user = models.ForeignKey(User, null=False)
 
+    picture = models.ImageField(upload_to='pics', null=True)
+
     # required for GIS queries
     objects = models.GeoManager()
 

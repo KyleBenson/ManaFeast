@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     url(r'^$', 'django_manafeast.views.login_handler', name='home'),
     url(r'^account.html$', 'accounts.views.new_account'),
     url(r'^donate.html$', 'donations.views.donate'),
+    url(r'^search$', 'donations.views.search'),
     url(r'^ajax/', include('ajax.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
