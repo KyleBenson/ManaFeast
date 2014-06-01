@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Mannafeast</title>
+    <title>Manafeast</title>
     <link href="favicon.ico" rel="icon" type="image/x-icon" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
@@ -19,11 +19,11 @@
         var showValue;
         var updateSearchFilter;
         var searchFilter = new Object(); 
-
+        var position = null;
         var changingLocation = true;
 
         searchFilter.distance = 25;
-        searchFilter.types = "refrigerated shelf-stable produce frozen";
+        searchFilter.food_type = "refrigerated shelf-stable produce frozen";
         searchFilter.keywords = new Array();
         searchFilter.pickup = true;
         searchFilter.dropoff = true;
@@ -42,9 +42,9 @@
                 }
 
                 start = $('#start_time').datetimepicker("getDate");
-                searchFilter.time_window_start = start.getFullYear() + "/" + start.getMonth() + "/" + start.getDate() + " " + start.getHours() + ":" + start.getMinutes();
+                searchFilter.time_window_start = start.getFullYear() + "-" + start.getMonth() + "-" + start.getDate() + " " + start.getHours() + ":" + start.getMinutes();
                 end = $('#end_time').datetimepicker("getDate");
-                searchFilter.time_window_end = end.getFullYear() + "/" + end.getMonth() + "/" + end.getDate() + " " + end.getHours() + ":" + end.getMinutes();
+                searchFilter.time_window_end = end.getFullYear() + "-" + end.getMonth() + "-" + end.getDate() + " " + end.getHours() + ":" + end.getMinutes();
 
                 searchFilter.food_type = ""; 
 
@@ -53,6 +53,9 @@
                         searchFilter.food_type += $(this).val() + " ";
                     }
                 });
+
+                searchFilter.lat = position.coords.latitude;
+                searchFilter.lon = position.coords.longitude;
 
                 searchFilter.keywords = $("#keywords").val();
                 
@@ -88,7 +91,6 @@
                 $.getJSON("demo_ajax_json.js", function (result) {
                     recipient_points = result;
                 });
-                var position = null;
 
                 if (navigator.geolocation) {
                     position = navigator.geolocation.getCurrentPosition(loadMap);
@@ -309,7 +311,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">Mannafeast</a>
+                    <a class="navbar-brand" href="/">Manafeast</a>
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
