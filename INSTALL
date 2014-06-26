@@ -1,0 +1,6 @@
+1) create a virtual environment.
+2) Install postgis2.0:
+sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
+sudo apt-get update; sudo apt-get install -u postgresql-9.1-postgis-2.0
+3) run ./setup.sh
+4) Don't forget your South migrations! ./manage.py syncdb
