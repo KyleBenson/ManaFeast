@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from datetime import datetime, timedelta
 import accounts.models
 from django.contrib.auth.models import User
-from django.forms import ModelForm
+from django.forms import ModelForm, ImageField
 
 class Donation(models.Model):
 
@@ -15,7 +15,7 @@ class Donation(models.Model):
 
     location = models.PointField()
 
-    long_description = models.TextField()
+    long_description = models.TextField(max_length=300)
     short_description = models.TextField(max_length=50, null=False)
 
     time_window_start = models.DateTimeField(null=False, default=datetime.now())
@@ -39,7 +39,12 @@ class Donation(models.Model):
 class DonationForm(ModelForm):
     class Meta:
         model = Donation
-        fields = ['lat', 'lon', 'long_description', 'short_description',
-                  'time_window_start', 'time_window_end', 'pickup', 'dropoff',
-                  'food_type']
+        fields = [
+            'lat', 'lon',
+            'long_description', 'short_description',
+            'time_window_start', 'time_window_end',
+            'pickup', 'dropoff',
+            'food_type',
+            'picture',
+        ]
 
